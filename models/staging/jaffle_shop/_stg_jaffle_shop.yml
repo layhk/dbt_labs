@@ -12,13 +12,3 @@ models:
         data_tests:
           - unique
           - not_null
-      - name: status
-        data_tests:
-          - accepted_values:
-              arguments:
-                values:
-                  - completed
-                  - shipped
-                  - returned
-                  - placed
-                  - return_pending
