@@ -1,0 +1,14 @@
+models:
+  - name: stg_jaffle_shop_customers_cleaned
+    columns:
+      - name: customer_id
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_jaffle_shop_orders_cleaned
+    columns:
+      - name: order_id
+        data_tests:
+          - unique
+          - not_null
