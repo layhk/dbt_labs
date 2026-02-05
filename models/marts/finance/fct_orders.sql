@@ -1,5 +1,5 @@
 with orders as  (
-    select * from {{ ref ('stg_jaffle_shop_orders' )}}
+    select * from {{ ref ('stg_jaffle_shop_orders_cleaned' )}}
 ),
 
 payments as (
@@ -19,7 +19,7 @@ order_payments as (
 
     select
         orders.order_id,
-        orders.customer_id,
+        orders.user_id,
         orders.order_date,
         coalesce (order_payments.amount, 0) as amount
 
