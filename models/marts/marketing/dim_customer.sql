@@ -1,5 +1,5 @@
 with customers as (
-    select * from {{ ref ('stg_jaffle_shop_customers')}}
+    select * from {{ ref ('stg_jaffle_shop_customers_cleaned')}}
 ),
 
 orders as (
@@ -7,7 +7,7 @@ orders as (
 ),
 customer_orders as (
     select
-        customer_id,
+        user_id as customer_id,
         min (order_date) as first_order_date,
         max (order_date) as most_recent_order_date,
         count(order_id) as number_of_orders,
