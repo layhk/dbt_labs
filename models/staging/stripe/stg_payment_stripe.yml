@@ -1,0 +1,20 @@
+models:
+- name: stg_payment_stripe
+  description: This model processes and transforms payment data from the Stripe source,
+    converting amounts from cents to dollars and renaming fields for consistency and
+    clarity. It serves as a staging model for payment information, preparing it for
+    further analysis and reporting.
+  columns:
+  - name: payment_id
+    description: A unique identifier for each payment.
+  - name: order_id
+    description: The identifier for the order associated with the payment.
+  - name: payment_method
+    description: The method used for the payment, such as credit card or bank transfer.
+  - name: status
+    description: The current status of the payment, indicating whether it is completed,
+      pending, or failed.
+  - name: amount
+    description: The total amount of the payment in dollars.
+  - name: created_at
+    description: The timestamp when the payment was created, in UTC.
