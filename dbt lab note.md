@@ -110,14 +110,16 @@
                - unique
            - name: location
              data_tests:
+               # Ensure every value in this column is equal to a value in the provided list below     
                - accepted_values:
                    values:
                      - EU
                      - Non-EU
            - name: user_id
              data_tests:
+               # Ensure that every value in column user_id above exists in customer_id in model B, eliminate orphan data     
                - relationships:
-                   to: ref('stg_jaffle_shop_customers_cleaned')
+                   to: ref('tableA')
                    field: customer_id
      ```
 
@@ -153,9 +155,75 @@
      * performs a `run` followed by a `test` for both source and models (singular + generic only, excluding freshness).
      * essential for **deployment**: allows us to see the results before committing and pushing to production.
      * **Difference vs `dbt run`**: `dbt build` will fail and skip downstream models if a test fails.
+     * `dbt build --select +dim_customer_cleaned` will build the model and the upstream dependencies.
 
-   * **f. AI-integrated**:
-     * **AI/Copilot**: dbt has integrated Copilot to generate test cases in YML files. It studies your data structure (DDL) and populates the code.
-     > It suggests based on DDL, which may not match and need update.
-            
-     _Note_: All dbt SQL queries **must not** include a `;` or it will throw an error.
+<br> 
+
+8. **Documentation**: for source and model.
+ * Add `description` key in file for table/column-level. Can refer external doc/website, or simple text description.
+ * e.g.
+
+**_src_jaffle_shop.yml**
+
+```yml
+sources:
+  - name: jaffle_shop
+    description: A clone of a Postgres database
+```
+
+**_stg_jaffle_shop.yml**
+
+```yml
+   models:
+     name: stg_jaffle_shop__orders
+     columns:
+      - name: order_id
+        description: primary key     
+      - name: status
+        # This will reference a md file for documentation
+        description: "{{ doc('order_status') }}" 
+```
+   
+**jaffle_shop_docs.md**
+
+```md
+{% docs order_status %}
+    
+One of the following values: 
+
+| status         | definition                                       |
+|----------------|--------------------------------------------------|
+| placed         | Order placed, not yet shipped                    |
+| shipped        | Order has been shipped, not yet been delivered   |
+| completed      | Order has been received by customers             |
+| return pending | Customer indicated they want to return this item |
+| returned       | Item has been returned                           |
+
+{% enddocs %}
+```
+
+The yml file doc block in description will reference to the doc block name in md file, as a single md file may have multiple doc blocks.
+
+<br>
+
+9. **Copilot-integrated**: (if enabled at _account_ setting)
+- able to generate test cases in YML files. It studies your data structure (DDL) and populates the code.
+- able to generate documentation. Just open the file then click generate documentation by copilot, and it will check if the file is exist then update, or create a new file.
+> Copilot suggests based on DDL, which may not match and need update. Still a good starter for developers to use as base.
+
+10. **Deployment** - setting up PROD enviroment for deployment, use a new schema eg. `dbt_prod`.
+    > For development, use a schema such as `dbt_lh` for developer branch.
+- default run on `main` branch. Only merge other branch to it, do not commit at main directly.
+- Create job and enable source freshness check, and generate doc on run. The default command is `dbt build` use.
+- Set the triggers : on-schedule, or after another job completed. 
+
+11. **Catalog**
+    - View status, last run, code, lineage, source, ddl, descriptions all at once at model level.
+    - _Enterprise_ account features :
+    - - view and track performance of each model
+      - view the `recommendation` tab that dbt suggested for best practices
+      - insights such as which model taking longest time. 
+
+<br>
+
+**_Note_**: All dbt SQL queries **must not** include a `;` or it will throw an error.
